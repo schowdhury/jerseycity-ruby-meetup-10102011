@@ -53,9 +53,21 @@ set :real_revision, lambda { source.query_revision(revision) { |cmd| capture(cmd
 
 after "deploy:symlink", "deploy:symlink_configs"
 after "deploy:symlink_configs", "deploy:symlink_bundle"
+#since you're using sqlite you don't want to overwrite your db anytime you do an update
+#first you shouldn't have db/production.sqlite3 checked in
+#second the task I added below: deploy:symlink_db links to the databse in shared
+#your db should be at shared/db/production.sqlite3
+after "deploy:symlink", "deploy:symlink_db"
 
 
 namespace :deploy do
+
+  task :symlink_db, :roles => :app, :except => {:no_symlink => true} do
+    run <<-CMD
+      cd #{release_path} && ln -s #{shared_path}/db/#{rails_env}.sqlite3 #{release_path}/db/#{rails_env}.sqlite3
+    CMD
+  end
+
   task :migrate do
     run("source /etc/profile; cd #{current_path}; rake RAILS_ENV=#{rails_env} db:migrate")
   end
