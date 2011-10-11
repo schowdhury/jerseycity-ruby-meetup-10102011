@@ -1,0 +1,20 @@
+Notes from the meetup:
+
+We wrote a capistrano deploy script and got kittybase up on sameerchowdhury.com
+
+kittybase.sameerchowdhury.com
+
+We got image upload to work with paperclip by installing the imagemagick package through yum.
+
+We're using apache reverse proxying to standalone passengers.  Here's the kittybase virtualhost config:
+
+
+<VirtualHost *:80>
+    DocumentRoot /home/dpflaster/rails/kittybase/current/public
+    ServerName  kittybase.sameerchowdhury.com
+    ProxyPass / http://127.0.0.1:9001/
+    ProxyPassReverse / http://127.0.0.1:9001
+</VirtualHost>
+
+We also discussed what project we want to work on as a group.  We've decided on a beer check-in and review site 
+using maps.
